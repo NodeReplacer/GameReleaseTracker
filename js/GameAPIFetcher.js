@@ -25,18 +25,24 @@ let API_KEY_RAWG = '';
 
 //Overview of this promise statement. This code waits for API_URL_RAWG to be returned before resolving so that
 //the code can rely on API_URL_RAWG being built and pointing to an actual location.
+//I could have just placed it into the then statement here but I wanted to clearly separate each code block.
+//There may be a slight performance hit here, however.
 const apiUrlBuilder = new Promise ((resolve, reject) => {
     //Attempt to fetch the API key at the local location.
     fetch("../PseudoResponseData/API_KEY.json")
         .then(response => {
-            if (response.status === 404) {
-                throw new Error("API_KEY.json not found.");
-            } else if (response.status === 200) {
+            if (response.status === 200) {
                 //console.log("Response status success.");
                 return response.json();
             }
+            else {
+                throw new Error("Problem with API_KEY.json.");
+            }
         })
         .then(results => {
+            if (!results.hasOwnProperty(`API_KEY_RAWG`)) {
+                throw new Error(`API_KEY_RAWG not found in JSON.`);
+            }
             //We have the json. The name of the variable where the API key should be stored at is: API_KEY_RAWG.
             //console.log(results);
             API_KEY_RAWG = `${results.API_KEY_RAWG}`;
@@ -53,7 +59,7 @@ const apiUrlBuilder = new Promise ((resolve, reject) => {
 
 apiUrlBuilder
     .then(builtURL => {
-        console.log(builtURL);
+        console.log(`builtURL: ${builtURL}`);
         fetch(builtURL)
             .then(response => {
                 if (response.status === 404) {
@@ -64,72 +70,25 @@ apiUrlBuilder
                 }
             })
             .then(data => {
-                //Issue is only in the fact that the "next" field contains a literal string. I can probably send
-                //a normal fetch request.
-
                 //Otherwise we need to organize this data now. Just use the results array.
                 console.log(data.results);
+                const gameList = document.querySelector(`.game-list`);
+                for (let APIresult of data.results) {
+                    let gameItem = document.createElement('div');
+                    gameItem.className = "game";
+                    gameList.appendChild(gameItem);
+                    let gameName = document.createElement('div');
+                    gameName.className = 'game-name';
+                    gameName.innerHTML = APIresult.name;
+                    gameItem.appendChild(gameName);
+                    let gameRelease = document.createElement('div');
+                    gameRelease.className = "release-date";
+                    gameRelease.innerHTML = APIresult.released;
+                    gameItem.appendChild(gameRelease);
+                }
             })
     })
     .catch(error => {
         console.error(error);
     });
 
-/*
-fetch('https://cdn.jsdelivr.net/npm/dotenv@16.0.3/lib/main.min.js')
-    .then(response => {
-        if (response.status === 404) {
-            //dotenv was not found. Use the preloaded data
-            API_URL_RAWG = "./pseudoResponseData1.json"
-        }
-        else {
-            //dotenv was found so look for the env variable
-            response.text().then(script => {
-                const scriptEl = document.createElement('script');
-                scriptEl.innerHTML = script;
-                document.head.appendChild(scriptEl);
-                if (process.env.API_KEY_RAWG) {
-                    API_KEY_RAWG = process.env.API_KEY_RAWG;
-                    API_URL_RAWG = `https://api.rawg.io/api/games?dates=2021-10-10,2022-10-10&ordering=-added&key=${API_KEY_RAWG}`;
-                }
-                else {
-                    API_URL_RAWG = `./pseudoResponseData1.json`;
-                }
-            })
-        }
-    });
-
-
-console.log(API_URL_RAWG);
-*/
-
-/*
-
-*/
-
-/*
-fetch(API_URL_RAWG)
-    .then(response => response.json())
-    .then(results => {
-        console.log(results);
-
-        let output = '';
-        results.forEach(name => {
-            output += `
-            <div>
-                <h2>${results.name}</h2>
-            </div>
-            `;
-        });
-
-        const blob = new Blob([JSON.stringify(results)], { type: 'application/json' });
-        saveAs(blob, 'data.json');
-
-
-        // Do something with the data
-    })
-    .catch(error => {
-        console.error("There was a problem with the fetch operation: ",error);
-        // Handle the error
-    });
-*/
