@@ -83,7 +83,7 @@ apiUrlBuilder
                     gameItem.appendChild(gameName);
                     let gameRelease = document.createElement('div');
                     gameRelease.className = "release-date";
-                    gameRelease.innerHTML = APIresult.released;
+                    gameRelease.innerHTML = `Release Date: ${APIresult.released}`;
                     gameItem.appendChild(gameRelease);
                 }
             })
