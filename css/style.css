@@ -1,13 +1,21 @@
-.game-list {
+.top-container{
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.game {
-    height: 100px;
+.game-list {
+    /* Potentially confusing name. game-list can be called game-container
+     for the sake of understanding. Standing on the same level as button-container inside
+     top-container.
+     */
+    flex-direction: column;
+    align-items: center;
     width: 50%;
     min-width: 500px;
     max-width: 600px;
+}
+.game {
+    height: 100px;
     border-bottom: 1px solid gray;
     border-bottom-width: 1px;
     padding-bottom: 5px;
@@ -20,4 +28,17 @@
 .release-date {
     font-size: 16px;
     color: gray;
+}
+.button-container{
+    display: flex;
+    width: 50%;
+    min-width: 500px;
+    max-width: 600px;
+    justify-content: space-between;
+    border-bottom: 1px solid gray;
+    border-bottom-width: 1px;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+.prev-button,.next-button {
 }
